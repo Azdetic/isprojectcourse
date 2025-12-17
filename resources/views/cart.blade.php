@@ -1,140 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shopping Cart - TMarket</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .t-red { color: #B91C1C; }
-        .bg-t-red { background-color: #B91C1C; }
-        .hover-bg-t-red:hover { background-color: #991B1B; }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style> 
+        body { font-family: 'Plus Jakarta Sans', sans-serif; } 
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
     @include('components.navbar')
 
-    <div class="flex-grow flex items-center justify-center">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
 
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-8 flex items-center gap-3">
+            <span class="bg-red-50 text-[#B91C1C] w-12 h-12 rounded-xl flex items-center justify-center shadow-sm">
+                <i class="fas fa-shopping-cart text-xl"></i>
+            </span>
+            Shopping Cart
+        </h1>
 
-            @if(session('cart') && count(session('cart')) > 0)
-                <div class="bg-white shadow rounded-lg overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @php $total = 0 @endphp
-                                @foreach(session('cart') as $id => $details)
-                                    @php $total += $details['price'] * $details['quantity'] @endphp
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $details['image'] }}" alt="{{ $details['name'] }}">
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $details['name'] }}</div>
-                                                    <div class="text-sm text-gray-500">{{ $details['seller'] }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">Rp {{ number_format($details['price'], 0, ',', '.') }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center border border-gray-300 rounded-lg w-fit">
-                                                <form action="{{ route('cart.update') }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="id" value="{{ $id }}">
-                                                    <input type="hidden" name="quantity" value="{{ $details['quantity'] - 1 }}">
-                                                    <button type="submit" class="px-3 py-1 text-gray-600 hover:bg-gray-100 hover:text-red-600 transition disabled:opacity-50" {{ $details['quantity'] <= 1 ? 'disabled' : '' }}>
-                                                        <i class="fas fa-minus text-xs"></i>
-                                                    </button>
-                                                </form>
+        @if(session('success'))
+            <div class="mb-6 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-xl flex items-center gap-2 shadow-sm">
+                <i class="fas fa-check-circle"></i>
+                <span class="font-medium text-sm">{{ session('success') }}</span>
+            </div>
+        @endif
 
-                                                <span class="px-2 text-sm font-medium text-gray-900 w-8 text-center">{{ $details['quantity'] }}</span>
+        @if(session('cart') && count(session('cart')) > 0)
+        
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            
+            <div class="flex-grow w-full space-y-4">
+                
+                @php $total = 0; @endphp
+                
+                @foreach(session('cart') as $id => $details)
+                    @php $total += $details['price'] * $details['quantity']; @endphp
 
-                                                <form action="{{ route('cart.update') }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="id" value="{{ $id }}">
-                                                    <input type="hidden" name="quantity" value="{{ $details['quantity'] + 1 }}">
-                                                    <button type="submit" class="px-3 py-1 text-gray-600 hover:bg-gray-100 hover:text-red-600 transition">
-                                                        <i class="fas fa-plus text-xs"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">Rp {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <form action="{{ route('cart.remove', $id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-gray-50">
-                                <tr>
-                                    <td colspan="3" class="px-6 py-4 text-right font-bold text-gray-900">Total</td>
-                                    <td class="px-6 py-4 font-bold text-t-red">Rp {{ number_format($total, 0, ',', '.') }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row gap-6 items-start relative group transition hover:shadow-md">
+                        
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+                            <img src="{{ Str::startsWith($details['image'], 'http') ? $details['image'] : asset('storage/' . $details['image']) }}" 
+                                 alt="{{ $details['name'] }}" 
+                                 class="w-full h-full object-cover">
+                        </div>
+
+                        <div class="flex-grow w-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $details['category'] ?? 'Item' }}</span>
+                                    <h3 class="font-bold text-gray-900 text-lg leading-tight mb-1">
+                                        {{ $details['name'] }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500 mb-3">Seller: {{ $details['seller'] ?? 'Student' }}</p>
+                                </div>
+                                
+                                <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 bg-gray-50 rounded-lg hover:bg-red-50" title="Remove Item">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="flex flex-wrap items-end justify-between gap-4 mt-2">
+                                
+                                <div>
+                                    <div class="text-xl font-extrabold text-[#B91C1C]">
+                                        Rp {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}
+                                    </div>
+                                    @if($details['quantity'] > 1)
+                                        <div class="text-xs text-gray-400 font-medium">
+                                            {{ $details['quantity'] }} x Rp {{ number_format($details['price'], 0, ',', '.') }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="flex items-center border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                                    <form action="{{ route('cart.update') }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="id" value="{{ $id }}">
+                                        <input type="hidden" name="quantity" value="{{ $details['quantity'] - 1 }}">
+                                        <button type="submit" class="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-[#B91C1C] transition {{ $details['quantity'] <= 1 ? 'opacity-50 cursor-not-allowed' : '' }}" {{ $details['quantity'] <= 1 ? 'disabled' : '' }}>
+                                            <i class="fas fa-minus text-xs"></i>
+                                        </button>
+                                    </form>
+
+                                    <div class="w-10 text-center text-sm font-bold text-gray-900 border-x border-gray-100 py-1">
+                                        {{ $details['quantity'] }}
+                                    </div>
+
+                                    <form action="{{ route('cart.update') }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="id" value="{{ $id }}">
+                                        <input type="hidden" name="quantity" value="{{ $details['quantity'] + 1 }}">
+                                        <button type="submit" class="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-[#B91C1C] transition">
+                                            <i class="fas fa-plus text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
-                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                        <a href="{{ route('products') }}" class="text-sm text-gray-600 hover:text-gray-900">&larr; Continue Shopping</a>
-                        <form action="{{ route('orders.checkout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="bg-t-red hover-bg-t-red text-white font-bold py-2 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out">
-                                Checkout
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @else
-                <!-- Empty Cart State -->
-                <div class="flex flex-col items-center justify-center text-center">
-                    <div class="bg-gray-100 rounded-full p-8 mb-6">
-                        <i class="fas fa-shopping-cart text-4xl text-gray-500"></i>
-                    </div>
-
-                    <h2 class="text-xl font-medium text-gray-900 mb-2">Your cart is empty</h2>
-                    <p class="text-gray-500 mb-8">Start adding items from our marketplace!</p>
-
-                    <a href="{{ route('products') }}" class="bg-t-red hover-bg-t-red text-white font-bold py-3 px-8 rounded-lg transition duration-150 ease-in-out shadow-sm">
-                        Browse Products
+                @endforeach
+                
+                <div class="mt-6">
+                    <a href="{{ route('products') }}" class="inline-flex items-center text-sm font-bold text-gray-500 hover:text-[#B91C1C] transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
                     </a>
                 </div>
-            @endif
+            </div>
+
+            <div class="w-full lg:w-[380px] flex-shrink-0 lg:sticky lg:top-24">
+                <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-xl shadow-gray-900/5">
+                    <h2 class="font-bold text-gray-900 text-lg mb-6 pb-4 border-b border-gray-50">Order Summary</h2>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-gray-500 text-sm font-medium">
+                            <span>Subtotal</span>
+                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500 text-sm font-medium">
+                            <span>Platform Fee</span>
+                            <span>Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-xl font-extrabold text-gray-900 pt-4 border-t border-gray-50">
+                            <span>Total</span>
+                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('orders.checkout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full bg-[#B91C1C] hover:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-900/20 transition transform active:scale-[0.98] mb-4 flex items-center justify-center gap-2">
+                            Checkout Now <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div class="flex items-center justify-center gap-2 text-xs text-gray-400 font-medium">
+                        <i class="fas fa-shield-alt"></i> Secure Transaction
+                    </div>
+                </div>
+            </div>
 
         </div>
+
+        @else
+        <div class="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-dashed border-gray-200 text-center">
+            <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-6 text-[#B91C1C]">
+                <i class="fas fa-shopping-basket text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+            <p class="text-gray-500 max-w-sm mb-8 text-sm leading-relaxed">It looks like you haven't discovered our awesome student marketplace yet.</p>
+            <a href="{{ route('products') }}" class="px-8 py-3.5 bg-[#B91C1C] text-white rounded-xl font-bold hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center gap-2">
+                Start Shopping <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        @endif
+
     </div>
 
     @include('components.footer')
