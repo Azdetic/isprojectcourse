@@ -11,15 +11,12 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         
-        /* THE FIXED DIAGONAL */
         .clip-diagonal {
-            /* Mobile: A gentle slope to save space */
             clip-path: polygon(0 0, 100% 0, 100% 85%, 0 95%);
         }
         
         @media (min-width: 768px) {
             .clip-diagonal {
-                /* Desktop: A sharp, dramatic slash that looks professional */
                 clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
             }
         }
@@ -43,11 +40,10 @@
         <div class="bg-white w-full max-w-[450px] rounded-2xl shadow-2xl shadow-gray-900/20 p-8 md:p-10 relative border border-gray-100">
 
             <div class="flex flex-col items-center mb-8">
-                <div class="flex items-center gap-2.5 text-[#B91C1C]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/>
-                    </svg>
-                    <span class="text-3xl font-extrabold tracking-tight uppercase">TMARKET</span>
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="TMarket Logo" class="h-12 w-auto object-contain">
+                    
+                    <span class="text-3xl font-extrabold text-[#B91C1C] tracking-tight uppercase">TMARKET</span>
                 </div>
             </div>
 
