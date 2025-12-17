@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Browse Products - TMarket</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -43,11 +43,11 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
                 <div class="flex items-center overflow-x-auto no-scrollbar pb-1 md:pb-0 gap-2">
                     <span class="text-gray-400 font-bold text-xs uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
-                    
+
                     <button class="bg-[#B91C1C] text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md shadow-red-900/20 transition hover:bg-red-800">
                         All Items
                     </button>
-                    
+
                     <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
                         Food
                     </button>
@@ -64,7 +64,7 @@
                         Fashion
                     </button>
                 </div>
-                
+
                 <div class="text-gray-400 text-xs font-bold uppercase tracking-wide whitespace-nowrap pl-4 border-l border-gray-100 hidden md:block">
                     {{ count($products) }} Results
                 </div>
@@ -72,21 +72,19 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @forelse($products as $index => $product)
+            @forelse($products as $product)
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full group">
-                
+
                 <div class="relative h-60 bg-gray-100 overflow-hidden">
-                    <a href="{{ route('product-detail', ['id' => $index]) }}" class="block w-full h-full">
+                    <a href="{{ route('product-detail', ['id' => $product['id']]) }}" class="block w-full h-full">
                         <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     </a>
-                    
+
                     <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg border border-gray-100 shadow-sm pointer-events-none">
                         <span class="text-[12px] font-bold text-gray-500 uppercase tracking-wide">{{ $product['category'] }}</span>
                     </div>
 
-                    <button class="absolute top-3 right-3 bg-white/90 p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition shadow-sm backdrop-blur-md">
-                        <i class="far fa-heart"></i>
-                    </button>
+
                 </div>
 
                 <div class="p-5 flex flex-col flex-grow">
@@ -97,21 +95,21 @@
                          <span class="text-xs text-gray-500 font-medium truncate">{{ $product['seller'] }}</span>
                     </div>
 
-                    <a href="{{ route('product-detail', ['id' => $index]) }}" class="group-hover:text-[#B91C1C] transition-colors">
+                    <a href="{{ route('product-detail', ['id' => $product['id']]) }}" class="group-hover:text-[#B91C1C] transition-colors">
                         <h3 class="font-bold text-gray-900 text-lg mb-1 leading-tight line-clamp-1">{{ $product['name'] }}</h3>
                     </a>
-                    
+
                     <div class="text-xl font-extrabold text-[#B91C1C] mb-4">
                         Rp {{ number_format($product['price'], 0, ',', '.') }}
                     </div>
 
                     <div class="mt-auto grid grid-cols-5 gap-3 pt-4 border-t border-gray-50">
-                        <a href="{{ route('product-detail', ['id' => $index]) }}" class="col-span-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-sm hover:border-[#B91C1C] hover:text-[#B91C1C] hover:bg-red-50 transition flex items-center justify-center">
+                        <a href="{{ route('product-detail', ['id' => $product['id']]) }}" class="col-span-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-sm hover:border-[#B91C1C] hover:text-[#B91C1C] hover:bg-red-50 transition flex items-center justify-center">
                             View Details
                         </a>
-                        <button class="col-span-1 py-2.5 rounded-xl bg-[#B91C1C] text-white font-medium text-sm hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center justify-center">
+                        <a href="{{ route('cart.add', $product['id']) }}" class="col-span-1 py-2.5 rounded-xl bg-[#B91C1C] text-white font-medium text-sm hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center justify-center">
                             <i class="fas fa-cart-plus"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

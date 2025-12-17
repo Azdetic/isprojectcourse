@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $product['name'] }} - TMarket</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
@@ -28,15 +28,13 @@
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-16">
-            
+
             <div class="space-y-4">
                 <div class="bg-white rounded-3xl border border-gray-100 p-2 shadow-sm relative group overflow-hidden">
                     <div class="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative">
                         <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                     </div>
-                    <button class="absolute top-6 right-6 bg-white/90 backdrop-blur-md p-3 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition shadow-sm border border-gray-100">
-                        <i class="far fa-heart text-xl"></i>
-                    </button>
+
                 </div>
             </div>
 
@@ -109,9 +107,9 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 mt-auto">
-                    <button class="flex-1 bg-[#B91C1C] hover:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-900/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2">
+                    <a href="{{ route('cart.add', $product['id']) }}" class="flex-1 bg-[#B91C1C] hover:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-900/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
+                    </a>
                     <button class="flex-1 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#B91C1C] hover:text-[#B91C1C] font-bold py-4 rounded-xl transition flex items-center justify-center gap-2">
                         <i class="far fa-comment-alt"></i> Chat Seller
                     </button>
@@ -119,7 +117,7 @@
 
             </div>
         </div>
-        
+
         <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-16 flex items-start gap-4">
              <div class="bg-blue-100 text-blue-600 p-2 rounded-lg shrink-0">
                  <i class="fas fa-shield-alt text-xl"></i>
@@ -157,7 +155,7 @@
                         <div class="flex items-center gap-3 text-xs font-bold text-gray-500">
                             <span class="w-3">{{ $i }}</span>
                             <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-[#B91C1C]" style="width: {{ $i == 5 ? '70%' : ($i == 4 ? '20%' : '5%') }}"></div>
+                                <div class="h-full bg-[#B91C1C]" style="width: {{ $product['star_percentages'][$i] ?? 0 }}%"></div>
                             </div>
                         </div>
                         @endfor
@@ -185,9 +183,19 @@
                                 </div>
                             </div>
                             <p class="text-gray-600 text-sm leading-relaxed mb-4">{{ $review['comment'] ?? 'Great item, exactly as described!' }}</p>
-                            <button class="flex items-center text-gray-400 text-xs font-bold hover:text-gray-600 transition gap-1.5">
-                                <i class="far fa-thumbs-up"></i> Helpful ({{ $review['helpful'] ?? 0 }})
-                            </button>
+
+                            @if(isset($review['id']))
+                                <form action="{{ route('reviews.helpful', $review['id']) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="flex items-center text-gray-400 text-xs font-bold hover:text-red-600 transition gap-1.5">
+                                        <i class="far fa-thumbs-up"></i> Helpful ({{ $review['helpful'] ?? 0 }})
+                                    </button>
+                                </form>
+                            @else
+                                <button class="flex items-center text-gray-400 text-xs font-bold cursor-not-allowed gap-1.5" title="Cannot vote on archived reviews">
+                                    <i class="far fa-thumbs-up"></i> Helpful ({{ $review['helpful'] ?? 0 }})
+                                </button>
+                            @endif
                         </div>
                         @endforeach
                     @else
