@@ -45,10 +45,5 @@ class Product extends Model
     {
         return $this->created_at ? $this->created_at->diffForHumans() : 'Recently';
     }
-
-    public static function getAll()
-    {
-        return self::all();
-    }
 }
 
