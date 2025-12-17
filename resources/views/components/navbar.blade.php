@@ -1,79 +1,90 @@
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <!-- Left Side: Logo & Menu -->
-                <div class="flex items-center">
-                    <!-- Logo -->
-                    <div class="flex-shrink-0 flex items-center mr-8">
-                        <a href="{{ route('home') }}" class="flex items-center gap-2">
-                            <i class="fas fa-shopping-bag t-red text-2xl"></i>
-                            <span class="text-2xl font-bold t-red tracking-tight">TMARKET</span>
-                        </a>
-                    </div>
-
-                    <!-- Desktop Menu -->
-                    <div class="hidden md:flex space-x-8">
-                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 't-red font-medium' : 'text-gray-500 hover:text-red-600 font-medium transition' }}">Home</a>
-                        <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 't-red font-medium' : 'text-gray-500 hover:text-red-600 font-medium transition' }}">Products</a>
-                        <a href="#" class="text-gray-500 hover:text-red-600 font-medium transition">About</a>
-                    </div>
+<nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20 items-center">
+            
+            <div class="flex items-center gap-8">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{{ route('home') }}" class="flex items-center gap-2.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#B91C1C]" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/>
+                        </svg>
+                        <span class="text-2xl font-extrabold text-[#B91C1C] tracking-tight uppercase">TMARKET</span>
+                    </a>
                 </div>
 
-                <!-- Center: Search Bar -->
-                <div class="flex-1 max-w-xl mx-8 hidden md:block">
-                    <div class="relative">
-                        <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 hover:text-[#B91C1C] font-medium transition' }}">Home</a>
+                    <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 hover:text-[#B91C1C] font-medium transition' }}">Products</a>
+                    <a href="#" class="text-gray-500 hover:text-[#B91C1C] font-medium transition">About</a>
+                </div>
+            </div>
+
+            <div class="flex-1 max-w-lg mx-8 hidden md:block">
+                <div class="relative group">
+                    <input type="text" placeholder="Search for books, electronics..." 
+                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C] text-sm transition-all group-hover:bg-white group-hover:shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400 group-hover:text-[#B91C1C] transition"></i>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right Side: Icons & Auth -->
-                <div class="flex items-center space-x-6">
-                    <a href="#" class="text-gray-600 hover:text-red-600 relative">
-                        <i class="fas fa-shopping-cart text-lg"></i>
+            <div class="flex items-center space-x-5">
+                <a href="#" class="text-gray-500 hover:text-[#B91C1C] relative transition p-2 rounded-full hover:bg-red-50">
+                    <i class="fas fa-shopping-cart text-lg"></i>
                     </a>
 
-                    @auth
-                        <!-- User Profile -->
-                        <div class="relative ml-2 group">
-                            <div class="flex items-center space-x-2 cursor-pointer">
-                                <img class="h-8 w-8 rounded-full object-cover border border-gray-200" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=D12026&color=fff" alt="{{ Auth::user()->name }}">
-                                <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ Auth::user()->name }}</span>
-                                <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                @auth
+                    <div class="relative ml-2 group z-50">
+                        <div class="flex items-center space-x-2 cursor-pointer py-2">
+                            <img class="h-9 w-9 rounded-full object-cover border-2 border-white shadow-sm" 
+                                 src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=B91C1C&color=fff&bold=true" 
+                                 alt="{{ Auth::user()->name }}">
+                            <div class="hidden sm:flex flex-col items-start leading-tight">
+                                <span class="text-sm font-bold text-gray-800">{{ Auth::user()->name }}</span>
+                                <span class="text-[10px] text-gray-500">Student</span>
                             </div>
-                            <!-- Dropdown for Logout -->
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block border border-gray-100">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Logout</button>
-                                </form>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 ml-1"></i>
+                        </div>
+                        
+                        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl py-2 hidden group-hover:block border border-gray-100 ring-1 ring-black ring-opacity-5 transform origin-top-right transition-all">
+                            <div class="px-4 py-2 border-b border-gray-50 mb-1">
+                                <p class="text-xs text-gray-400">Signed in as</p>
+                                <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->email }}</p>
                             </div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">My Orders</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50">Log Out</button>
+                            </form>
                         </div>
-                    @else
-                        <div class="flex items-center space-x-3">
-                            <a href="{{ route('login') }}" class="btn-outline-red px-5 py-1.5 rounded-md text-sm font-medium transition">Login</a>
-                            <a href="{{ route('signup') }}" class="bg-t-red text-white px-5 py-1.5 rounded-md text-sm font-medium hover:bg-red-700 transition shadow-sm">Sign Up</a>
-                        </div>
-                    @endauth
-                </div>
+                    </div>
+                @else
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route('login') }}" class="text-gray-600 hover:text-[#B91C1C] font-bold text-sm px-3 py-2 transition">
+                            Log In
+                        </a>
+                        <a href="{{ route('signup') }}" class="bg-[#B91C1C] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-red-800 transition shadow-lg shadow-red-900/20 transform hover:-translate-y-0.5">
+                            Sign Up
+                        </a>
+                    </div>
+                @endauth
             </div>
         </div>
+    </div>
 
-        <!-- Mobile Search & Menu (Visible on small screens) -->
-        <div class="md:hidden px-4 pb-3 border-t border-gray-100 pt-3">
-            <div class="flex space-x-4 mb-3 overflow-x-auto no-scrollbar">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 't-red font-medium whitespace-nowrap' : 'text-gray-500 font-medium whitespace-nowrap' }}">Home</a>
-                <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 't-red font-medium whitespace-nowrap' : 'text-gray-500 font-medium whitespace-nowrap' }}">Products</a>
-                <a href="#" class="text-gray-500 font-medium whitespace-nowrap">About</a>
-            </div>
-            <div class="relative">
-                <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-400"></i>
-                </div>
+    <div class="md:hidden px-4 pb-4 border-t border-gray-100 bg-white">
+        <div class="flex space-x-6 py-3 overflow-x-auto no-scrollbar">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 font-medium whitespace-nowrap' }}">Home</a>
+            <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 font-medium whitespace-nowrap' }}">Products</a>
+            <a href="#" class="text-gray-500 font-medium whitespace-nowrap">About</a>
+        </div>
+        <div class="relative">
+            <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>

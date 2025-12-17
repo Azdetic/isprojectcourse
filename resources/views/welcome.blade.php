@@ -30,20 +30,39 @@
     @include('components.navbar')
 
     <!-- Hero Section -->
-    <div class="relative bg-gray-900 h-[400px] overflow-hidden">
-        <!-- Background Image with Overlay -->
-        <div class="absolute inset-0">
-            <img src="{{ asset('images/telkomuniv.jpg') }}" alt="Campus Background" class="w-full h-full object-cover opacity-40">
-            <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
+    <div class="relative h-[550px] w-full bg-white group">
+        <div class="absolute inset-0 clip-hero z-0 overflow-hidden">
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] group-hover:scale-105" 
+                 style="background-image: url('{{ asset('images/telkomuniv.jpg') }}');">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#B91C1C]/95 via-red-900/80 to-slate-900/60 mix-blend-multiply"></div>
+            <div class="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
         </div>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-            <div class="max-w-xl text-white">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to <span class="t-red">TMarket</span></h1>
-                <p class="text-lg md:text-xl text-gray-200 mb-8">The official marketplace for Telkom University students. Buy, sell, and connect with your campus community.</p>
-                <div class="flex space-x-4">
-                    <a href="{{ route('products') }}" class="bg-t-red hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium transition duration-300">Shop Now</a>
-                    <a href="#" class="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium transition duration-300">Sell Item</a>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-10">
+            <div class="max-w-3xl animate-fade-in-up">
+                <div class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    Official Marketplace for Telkom University
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight drop-shadow-lg">
+                    Buy, Sell, & Connect <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-100 via-white to-red-100">With Your Campus.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-red-50 mb-8 max-w-xl leading-relaxed font-medium text-shadow">
+                    The safest way to trade textbooks, electronics, and dorm essentials directly with other students.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ route('products') }}" class="px-8 py-4 bg-white text-[#B91C1C] rounded-xl font-bold hover:bg-gray-50 transition shadow-xl shadow-red-900/20 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <span>Start Shopping</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#" class="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl font-bold hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center">
+                        Sell an Item
+                    </a>
                 </div>
             </div>
         </div>
