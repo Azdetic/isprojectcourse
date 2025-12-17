@@ -1,112 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TMarket - Products</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Browse Products - TMarket</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .t-red { color: #D12026; }
-        .bg-t-red { background-color: #D12026; }
-        .border-t-red { border-color: #D12026; }
-        .hover-bg-t-red:hover { background-color: #b01b20; }
-        .btn-outline-red {
-            border: 1px solid #D12026;
-            color: #D12026;
-        }
-        .btn-outline-red:hover {
-            background-color: #D12026;
-            color: white;
-        }
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-white">
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-    <!-- Navbar -->
     @include('components.navbar')
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
 
-        <!-- Page Title Section -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Browse Products</h1>
-            <p class="text-gray-500">Discover items from your fellow Telkom University students</p>
-        </div>
-
-        <!-- Filter Section -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-            <div class="flex items-center overflow-x-auto no-scrollbar pb-2 md:pb-0">
-                <span class="text-gray-500 mr-4 whitespace-nowrap">Filter by category:</span>
-                <div class="flex space-x-2">
-                    <button class="bg-t-red text-white px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shadow-sm">All</button>
-                    <button class="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:border-red-500 hover:text-red-500 transition whitespace-nowrap">Food</button>
-                    <button class="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:border-red-500 hover:text-red-500 transition whitespace-nowrap">Secondhand Goods</button>
-                    <button class="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:border-red-500 hover:text-red-500 transition whitespace-nowrap">Digital Services</button>
-                    <button class="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:border-red-500 hover:text-red-500 transition whitespace-nowrap">Stationery</button>
-                    <button class="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:border-red-500 hover:text-red-500 transition whitespace-nowrap">Fashion</button>
+        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Browse Products</h1>
+                <p class="text-gray-500 font-medium">Discover unique items from your fellow Telkom University students.</p>
+            </div>
+            <div class="relative min-w-[200px]">
+                <select class="w-full appearance-none bg-white border border-gray-200 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:ring-1 focus:ring-[#B91C1C] cursor-pointer shadow-sm">
+                    <option>Sort by: Recommended</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Newest Arrivals</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <i class="fas fa-chevron-down text-xs"></i>
                 </div>
             </div>
-            <div class="text-gray-500 text-sm font-medium whitespace-nowrap">
-                {{ count($products) }} products found
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                <div class="flex items-center overflow-x-auto no-scrollbar pb-1 md:pb-0 gap-2">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+                    
+                    <button class="bg-[#B91C1C] text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md shadow-red-900/20 transition hover:bg-red-800">
+                        All Items
+                    </button>
+                    
+                    <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
+                        Food
+                    </button>
+                    <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
+                        Secondhand
+                    </button>
+                    <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
+                        Digital Services
+                    </button>
+                    <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
+                        Stationery
+                    </button>
+                    <button class="bg-gray-50 border border-gray-100 text-gray-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-white hover:border-red-200 hover:text-[#B91C1C] transition whitespace-nowrap">
+                        Fashion
+                    </button>
+                </div>
+                
+                <div class="text-gray-400 text-xs font-bold uppercase tracking-wide whitespace-nowrap pl-4 border-l border-gray-100 hidden md:block">
+                    {{ count($products) }} Results
+                </div>
             </div>
         </div>
 
-        <!-- Products Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($products as $index => $product)
-            <!-- Product Card -->
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition duration-300 overflow-hidden flex flex-col h-full">
-                <!-- Image Container -->
-                <div class="relative h-64 bg-gray-100 group">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @forelse($products as $index => $product)
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full group">
+                
+                <div class="relative h-60 bg-gray-100 overflow-hidden">
                     <a href="{{ route('product-detail', ['id' => $index]) }}" class="block w-full h-full">
-                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                     </a>
-                    <!-- Category Badge -->
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-red-100 shadow-sm pointer-events-none">
-                        <span class="text-xs font-semibold t-red">{{ $product['category'] }}</span>
+                    
+                    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg border border-gray-100 shadow-sm pointer-events-none">
+                        <span class="text-[12px] font-bold text-gray-500 uppercase tracking-wide">{{ $product['category'] }}</span>
                     </div>
+
+                    <button class="absolute top-3 right-3 bg-white/90 p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition shadow-sm backdrop-blur-md">
+                        <i class="far fa-heart"></i>
+                    </button>
                 </div>
 
-                <!-- Content -->
                 <div class="p-5 flex flex-col flex-grow">
-                    <a href="{{ route('product-detail', ['id' => $index]) }}" class="hover:text-red-600 transition">
-                        <h3 class="font-bold text-gray-900 text-lg mb-1 line-clamp-1">{{ $product['name'] }}</h3>
-                    </a>
-                    <div class="text-xl font-bold t-red mb-2">Rp {{ number_format($product['price'], 0, ',', '.') }}</div>
-                    <div class="text-sm text-gray-500 mb-6">Seller: {{ $product['seller'] }}</div>
+                    <div class="flex items-center gap-2 mb-3">
+                         <div class="w-5 h-5 rounded-full bg-gray-200 overflow-hidden border border-gray-100">
+                             <img src="https://ui-avatars.com/api/?name={{ urlencode($product['seller']) }}&background=random&size=20" alt="Seller">
+                         </div>
+                         <span class="text-xs text-gray-500 font-medium truncate">{{ $product['seller'] }}</span>
+                    </div>
 
-                    <!-- Buttons -->
-                    <div class="mt-auto grid grid-cols-2 gap-3">
-                        <a href="{{ route('product-detail', ['id' => $index]) }}" class="w-full py-2 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:border-red-500 hover:text-red-500 transition flex items-center justify-center">
+                    <a href="{{ route('product-detail', ['id' => $index]) }}" class="group-hover:text-[#B91C1C] transition-colors">
+                        <h3 class="font-bold text-gray-900 text-lg mb-1 leading-tight line-clamp-1">{{ $product['name'] }}</h3>
+                    </a>
+                    
+                    <div class="text-xl font-extrabold text-[#B91C1C] mb-4">
+                        Rp {{ number_format($product['price'], 0, ',', '.') }}
+                    </div>
+
+                    <div class="mt-auto grid grid-cols-5 gap-3 pt-4 border-t border-gray-50">
+                        <a href="{{ route('product-detail', ['id' => $index]) }}" class="col-span-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-sm hover:border-[#B91C1C] hover:text-[#B91C1C] hover:bg-red-50 transition flex items-center justify-center">
                             View Details
                         </a>
-                        <button class="w-full py-2 rounded-lg bg-t-red text-white font-medium text-sm hover:bg-red-700 transition shadow-sm">
-                            Add to Cart
+                        <button class="col-span-1 py-2.5 rounded-xl bg-[#B91C1C] text-white font-medium text-sm hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center justify-center">
+                            <i class="fas fa-cart-plus"></i>
                         </button>
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="col-span-full py-12 text-center">
+                <div class="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-10 flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
+                        <i class="fas fa-search text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900">No products found</h3>
+                    <p class="text-gray-500 text-sm mt-1 max-w-xs mx-auto">We couldn't find any items matching your filters. Try clearing them or searching for something else.</p>
+                    <button class="mt-6 px-6 py-2 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition shadow-sm text-sm">
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+            @endforelse
         </div>
 
     </div>
 
-    <!-- Footer -->
     @include('components.footer')
 
 </body>

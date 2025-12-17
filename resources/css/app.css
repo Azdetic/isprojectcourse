@@ -6,7 +6,11 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif,
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
+
+
+    --color-t-red: #B91C1C;
+    --color-t-red-dark: #991b1b;
 }
