@@ -22,17 +22,31 @@ class OrderController extends Controller
         return view('orders.index', compact('orders', 'status'));
     }
 
-    public function checkout()
+    public function checkout(Request $request)
     {
         $cart = session()->get('cart');
+        $selectedItems = $request->input('selected_items', []);
 
         if (!$cart || count($cart) == 0) {
             return redirect()->route('cart.index')->with('error', 'Cart is empty');
         }
 
+        if (empty($selectedItems)) {
+            return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
+        }
+
         $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        $checkoutItems = [];
+
+        foreach ($selectedItems as $id) {
+            if (isset($cart[$id])) {
+                $checkoutItems[$id] = $cart[$id];
+                $total += $cart[$id]['price'] * $cart[$id]['quantity'];
+            }
+        }
+
+        if (empty($checkoutItems)) {
+             return redirect()->route('cart.index')->with('error', 'Selected items not found in cart.');
         }
 
         $order = Order::create([
@@ -41,7 +55,7 @@ class OrderController extends Controller
             'status' => 'to_pay'
         ]);
 
-        foreach ($cart as $id => $item) {
+        foreach ($checkoutItems as $id => $item) {
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $id,
@@ -50,9 +64,12 @@ class OrderController extends Controller
                 'quantity' => $item['quantity'],
                 'price' => $item['price']
             ]);
+
+            // Remove only checked out items from cart
+            unset($cart[$id]);
         }
 
-        session()->forget('cart');
+        session()->put('cart', $cart);
 
         return redirect()->route('orders.index', ['status' => 'to_pay'])->with('success', 'Order placed successfully!');
     }
@@ -64,9 +81,9 @@ class OrderController extends Controller
         // Simple state machine for demo purposes
         // In real app, this might be handled by payment gateway callbacks or admin panel
         if ($order->status == 'to_pay') {
-            $order->update(['status' => 'to_ship']);
-        } elseif ($order->status == 'to_ship') {
-            $order->update(['status' => 'to_receive']);
+            // Instead of going to 'to_ship', it goes to 'pending_approval'
+            $order->update(['status' => 'pending_approval']);
+            return redirect()->route('orders.index', ['status' => 'pending_approval'])->with('success', 'Payment submitted. Waiting for admin approval.');
         } elseif ($order->status == 'to_receive') {
             $order->update(['status' => 'completed']);
         }

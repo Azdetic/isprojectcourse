@@ -4,24 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Orders - TMarket</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style> 
+
+    <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .active-tab { 
-            color: #B91C1C; 
-            border-bottom: 2px solid #B91C1C; 
+        .active-tab {
+            color: #B91C1C;
+            border-bottom: 2px solid #B91C1C;
             background-color: #FEF2F2;
         }
-        .inactive-tab { 
-            color: #6B7280; 
+        .inactive-tab {
+            color: #6B7280;
             border-bottom: 2px solid transparent;
         }
-        .inactive-tab:hover { 
-            color: #B91C1C; 
+        .inactive-tab:hover {
+            color: #B91C1C;
             background-color: #FAFAFA;
         }
     </style>
@@ -31,7 +31,7 @@
     @include('components.navbar')
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
-        
+
         <div class="mb-8">
             <h1 class="text-3xl font-extrabold text-gray-900">My Orders</h1>
             <p class="text-gray-500 font-medium">Track your purchases and view history.</p>
@@ -41,6 +41,9 @@
             <div class="flex overflow-x-auto no-scrollbar">
                 <a href="{{ route('orders.index', ['status' => 'to_pay']) }}" class="flex-1 py-4 px-6 text-center text-sm font-bold whitespace-nowrap transition {{ $status == 'to_pay' ? 'active-tab' : 'inactive-tab' }}">
                     <i class="far fa-credit-card mr-2"></i> To Pay
+                </a>
+                <a href="{{ route('orders.index', ['status' => 'pending_approval']) }}" class="flex-1 py-4 px-6 text-center text-sm font-bold whitespace-nowrap transition {{ $status == 'pending_approval' ? 'active-tab' : 'inactive-tab' }}">
+                    <i class="fas fa-clock mr-2"></i> Pending Approval
                 </a>
                 <a href="{{ route('orders.index', ['status' => 'to_ship']) }}" class="flex-1 py-4 px-6 text-center text-sm font-bold whitespace-nowrap transition {{ $status == 'to_ship' ? 'active-tab' : 'inactive-tab' }}">
                     <i class="fas fa-box mr-2"></i> To Ship
@@ -57,11 +60,11 @@
         <div class="space-y-6">
             @forelse($orders as $order)
                 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8 transition hover:shadow-md">
-                    
+
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-100 pb-4 mb-6 gap-2">
                         <div class="text-sm text-gray-500 font-medium">
-                            <span class="font-bold text-gray-900">Order #{{ $order->id }}</span> 
-                            <span class="mx-2">•</span> 
+                            <span class="font-bold text-gray-900">Order #{{ $order->id }}</span>
+                            <span class="mx-2">•</span>
                             {{ $order->created_at->format('d M Y, H:i') }}
                         </div>
                         <div class="self-start sm:self-auto">
@@ -75,13 +78,15 @@
                     <div class="space-y-6 mb-6">
                         @foreach($order->items as $item)
                             <div class="flex items-start gap-4 sm:gap-6">
-                                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0">
-                                    <img src="{{ Str::startsWith($item->product_image, 'http') ? $item->product_image : asset($item->product_image) }}" 
-                                         alt="{{ $item->product_name }}" 
-                                         class="w-full h-full object-cover">
-                                </div>
+                                <a href="{{ route('product-detail', $item->product_id) }}" class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 group block">
+                                    <img src="{{ Str::startsWith($item->product_image, 'http') ? $item->product_image : asset($item->product_image) }}"
+                                         alt="{{ $item->product_name }}"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                </a>
                                 <div class="flex-1 min-w-0">
-                                    <h3 class="text-base font-bold text-gray-900 leading-tight mb-1">{{ $item->product_name }}</h3>
+                                    <a href="{{ route('product-detail', $item->product_id) }}" class="group">
+                                        <h3 class="text-base font-bold text-gray-900 leading-tight mb-1 group-hover:text-[#B91C1C] transition">{{ $item->product_name }}</h3>
+                                    </a>
                                     <p class="text-sm text-gray-500 mb-2">Quantity: {{ $item->quantity }}</p>
                                     <div class="text-sm font-bold text-[#B91C1C]">
                                         Rp {{ number_format($item->price, 0, ',', '.') }}
@@ -101,7 +106,7 @@
                                             <i class="fas fa-check mr-1"></i> Reviewed
                                         </span>
                                     @else
-                                        <button onclick="openReviewModal({{ $item->product_id }}, {{ $order->id }}, '{{ addslashes($item->product_name) }}')" 
+                                        <button onclick="openReviewModal({{ $item->product_id }}, {{ $order->id }}, '{{ addslashes($item->product_name) }}')"
                                                 class="text-xs font-bold bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:border-[#B91C1C] hover:text-[#B91C1C] transition shadow-sm">
                                             <i class="far fa-star mr-1"></i> Write Review
                                         </button>
@@ -128,13 +133,14 @@
                                         Pay Now
                                     </button>
                                 </form>
+                            @elseif($order->status == 'pending_approval')
+                                <button disabled class="w-full sm:w-auto bg-yellow-100 text-yellow-700 px-6 py-3 rounded-xl text-sm font-bold cursor-not-allowed">
+                                    Waiting for Approval
+                                </button>
                             @elseif($order->status == 'to_ship')
-                                <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <button class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-900/20">
-                                        Ship Order (Demo)
-                                    </button>
-                                </form>
+                                <button disabled class="w-full sm:w-auto bg-gray-100 text-gray-400 px-6 py-3 rounded-xl text-sm font-bold cursor-not-allowed">
+                                    Waiting for Shipment
+                                </button>
                             @elseif($order->status == 'to_receive')
                                 <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST">
                                     @csrf @method('PATCH')
@@ -211,7 +217,7 @@
             const modal = document.getElementById('reviewModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
+
             document.getElementById('review_product_id').value = productId;
             document.getElementById('review_order_id').value = orderId;
             document.getElementById('review_product_name_display').textContent = productName;

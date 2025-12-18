@@ -32,7 +32,7 @@
             <div class="space-y-4">
                 <div class="bg-white rounded-3xl border border-gray-100 p-2 shadow-sm relative group overflow-hidden">
                     <div class="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative">
-                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <img src="{{ Str::startsWith($product['image'], 'http') ? $product['image'] : asset(ltrim($product['image'], '/')) }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
                     </div>
 
                 </div>
@@ -107,9 +107,15 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 mt-auto">
-                    <a href="{{ route('cart.add', $product['id']) }}" class="flex-1 bg-[#B91C1C] hover:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-900/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </a>
+                    @if(Auth::check() && Auth::id() == $product['user_id'])
+                        <button disabled class="flex-1 bg-gray-300 text-gray-500 font-bold py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fas fa-ban"></i> You Own This Item
+                        </button>
+                    @else
+                        <a href="{{ route('cart.add', $product['id']) }}" class="flex-1 bg-[#B91C1C] hover:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-900/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </a>
+                    @endif
                     <button class="flex-1 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#B91C1C] hover:text-[#B91C1C] font-bold py-4 rounded-xl transition flex items-center justify-center gap-2">
                         <i class="far fa-comment-alt"></i> Chat Seller
                     </button>
@@ -144,9 +150,17 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm h-fit">
                     <div class="text-center mb-6">
-                        <div class="text-6xl font-extrabold text-gray-900 mb-2">{{ $product['rating'] ?? 4.8 }}</div>
+                        <div class="text-6xl font-extrabold text-gray-900 mb-2">{{ $product['rating'] ?? 0 }}</div>
                         <div class="flex justify-center text-yellow-400 text-lg mb-2">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            @for($i = 0; $i < 5; $i++)
+                                @if($i < floor($product['rating'] ?? 0))
+                                    <i class="fas fa-star"></i>
+                                @elseif($i < ($product['rating'] ?? 0))
+                                    <i class="fas fa-star-half-alt"></i>
+                                @else
+                                    <i class="far fa-star text-gray-200"></i>
+                                @endif
+                            @endfor
                         </div>
                         <div class="text-gray-400 font-bold text-sm uppercase tracking-wide">Based on {{ $product['reviews_count'] ?? 12 }} Reviews</div>
                     </div>

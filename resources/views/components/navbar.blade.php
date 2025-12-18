@@ -6,7 +6,7 @@
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-3">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain">
-                        
+
                         <span class="text-2xl font-extrabold text-[#B91C1C] tracking-tight uppercase">TMARKET</span>
                     </a>
                 </div>
@@ -44,7 +44,7 @@
                                  alt="{{ Auth::user()->name }}">
                             <div class="hidden sm:flex flex-col items-start leading-tight">
                                 <span class="text-sm font-bold text-gray-800">{{ Auth::user()->name }}</span>
-                                <span class="text-[10px] text-gray-500">Student</span>
+                                <span class="text-[10px] text-gray-500">{{ Auth::user()->is_admin ? 'Admin' : 'Student' }}</span>
                             </div>
                             <i class="fas fa-chevron-down text-[10px] text-gray-400 ml-1"></i>
                         </div>
@@ -57,7 +57,14 @@
                                 </div>
                                 <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Profile</a>
                                 <a href="{{ route('my-products.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">My Products</a>
+                                <a href="{{ route('sales.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Incoming Orders</a>
                                 <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">My Orders</a>
+                                @if(Auth::user()->is_admin)
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-[#B91C1C] font-bold hover:bg-red-50">
+                                        <i class="fas fa-shield-alt mr-2"></i> Admin Panel
+                                    </a>
+                                @endif
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50">Log Out</button>

@@ -7,6 +7,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\MyProductController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,4 +46,27 @@ Route::middleware('auth')->group(function () {
 
     // My Products Routes
     Route::resource('my-products', MyProductController::class);
+
+    // Sales Routes (Incoming Orders for Sellers)
+    Route::get('/sales', [App\Http\Controllers\SalesController::class, 'index'])->name('sales.index');
+    Route::post('/sales/{id}/ship', [App\Http\Controllers\SalesController::class, 'shipItem'])->name('sales.ship');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Users
+    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+
+    // Orders
+    Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
+    Route::patch('/orders/{id}/approve', [AdminController::class, 'approveOrder'])->name('orders.approve');
+    Route::patch('/orders/{id}/reject', [AdminController::class, 'rejectOrder'])->name('orders.reject');
+    Route::patch('/orders/{id}/ship', [AdminController::class, 'shipOrder'])->name('orders.ship');
+
+    // Products
+    Route::get('/products', [AdminController::class, 'products'])->name('products.index');
+    Route::delete('/products/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
 });
