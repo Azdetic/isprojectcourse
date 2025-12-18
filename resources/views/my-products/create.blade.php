@@ -14,7 +14,7 @@
     @include('components.navbar')
 
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
-        
+
         <nav class="flex items-center text-sm text-gray-500 mb-8 font-medium">
             <a href="{{ route('my-products.index') }}" class="hover:text-[#B91C1C] transition">My Shop</a>
             <i class="fas fa-chevron-right text-xs mx-3 text-gray-400"></i>
@@ -48,31 +48,43 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Name</label>
-                        <input type="text" name="name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition" placeholder="e.g. Calculus Textbook" required>
+                        <input type="text" name="name" value="{{ old('name') }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition" placeholder="e.g. Calculus Textbook" required>
+                        @error('name')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Price (Rp)</label>
-                            <input type="number" name="price" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition" placeholder="150000" required>
+                            <input type="number" name="price" value="{{ old('price') }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition" placeholder="150000" required>
+                            @error('price')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Category</label>
-                            <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition cursor-pointer">
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Food">Food</option>
-                                <option value="Stationery">Stationery</option>
-                                <option value="Fashion">Fashion</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Books">Books</option>
-                                <option value="Other">Other</option>
+                            <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition cursor-pointer" required>
+                                <option value="" {{ !old('category') ? 'selected' : '' }} disabled>Select Category</option>
+                                <option value="Food" {{ old('category') == 'Food' ? 'selected' : '' }}>Food</option>
+                                <option value="Stationery" {{ old('category') == 'Stationery' ? 'selected' : '' }}>Stationery</option>
+                                <option value="Fashion" {{ old('category') == 'Fashion' ? 'selected' : '' }}>Fashion</option>
+                                <option value="Electronics" {{ old('category') == 'Electronics' ? 'selected' : '' }}>Electronics</option>
+                                <option value="Books" {{ old('category') == 'Books' ? 'selected' : '' }}>Books</option>
+                                <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
+                            @error('category')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description</label>
-                        <textarea name="description" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition resize-none" placeholder="Describe your item..." required></textarea>
+                        <textarea name="description" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-[#B91C1C] transition resize-none" placeholder="Describe your item..." required>{{ old('description') }}</textarea>
+                        @error('description')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -89,6 +101,9 @@
                                 <input id="image" name="image" type="file" class="hidden" accept="image/*" />
                             </label>
                         </div>
+                        @error('image')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="pt-4 flex gap-4">
@@ -105,21 +120,28 @@
     <script>
         const imageInput = document.getElementById('image');
         const imageLabel = document.getElementById('image-label');
-        
+
         imageInput.addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imageLabel.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
-                            <p class="text-white text-sm font-bold">Change Image</p>
-                        </div>
-                        <input id="image" name="image" type="file" class="hidden" accept="image/*">
-                    `;
-                    // Re-attach event listener to new input (simple hack for this demo)
-                    document.getElementById('image').addEventListener('change', arguments.callee);
+                    // Create preview overlay
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300 rounded-2xl';
+                    previewDiv.innerHTML = '<p class="text-white text-sm font-bold">Image Selected</p>';
+
+                    // Add image preview as background
+                    imageLabel.style.backgroundImage = `url(${e.target.result})`;
+                    imageLabel.style.backgroundSize = 'cover';
+                    imageLabel.style.backgroundPosition = 'center';
+
+                    // Change the upload text
+                    const textDiv = imageLabel.querySelector('p');
+                    if (textDiv) textDiv.textContent = 'Click to change image';
+
+                    // Add overlay
+                    imageLabel.appendChild(previewDiv);
                 }
                 reader.readAsDataURL(file);
             }

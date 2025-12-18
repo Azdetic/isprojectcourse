@@ -14,7 +14,7 @@
     @include('components.navbar')
 
     <div class="relative h-[550px] flex items-center justify-center overflow-hidden">
-        
+
         <div class="absolute inset-0 z-0">
             <img src="{{ asset('images/telkomuniv.jpg') }}" alt="Telkom University Campus" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/60 to-gray-900/90 mix-blend-multiply"></div>
@@ -29,21 +29,23 @@
             <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md">
                 The official student marketplace of Telkom University. A safe space to buy, sell, and connect.
             </p>
-            
+
             @auth
-                <div class="mt-8">
-                    <a href="{{ route('about.manage') }}" class="inline-flex items-center px-6 py-3 bg-white text-[#B91C1C] rounded-full text-sm font-bold shadow-lg hover:bg-gray-100 transition-all transform hover:-translate-y-1">
-                        <i class="fas fa-pen mr-2"></i> Manage Content
-                    </a>
-                </div>
+                @if(Auth::user()->is_admin)
+                    <div class="mt-8">
+                        <a href="{{ route('about.manage') }}" class="inline-flex items-center px-6 py-3 bg-white text-[#B91C1C] rounded-full text-sm font-bold shadow-lg hover:bg-gray-100 transition-all transform hover:-translate-y-1">
+                            <i class="fas fa-pen mr-2"></i> Manage Content
+                        </a>
+                    </div>
+                @endif
             @endauth
         </div>
     </div>
 
-    <div class="relative z-20 -mt-32 pb-20"> 
+    <div class="relative z-20 -mt-32 pb-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                
+
                 <div class="bg-white p-8 rounded-3xl shadow-xl shadow-gray-900/10 border border-gray-100 transform hover:-translate-y-2 transition duration-300">
                     <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-[#B91C1C] mb-6">
                         <i class="fas fa-shield-alt text-2xl"></i>
@@ -80,7 +82,7 @@
 
     <div class="bg-white pb-24 pt-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+
             <div class="flex items-center justify-between mb-16 border-b border-gray-100 pb-6">
                 <div>
                     <span class="text-[#B91C1C] font-bold text-sm tracking-widest uppercase block mb-1">Our Journey</span>
@@ -96,13 +98,13 @@
             <div class="space-y-24">
                 @forelse($sections as $index => $section)
                     <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 {{ $index % 2 == 1 ? 'md:flex-row-reverse' : '' }}">
-                        
+
                         @if($section->image)
                             <div class="w-full md:w-1/2 relative group cursor-pointer">
                                 <div class="absolute inset-0 bg-gray-100 rounded-3xl transform rotate-3 transition duration-300 group-hover:rotate-1"></div>
                                 <div class="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-lg bg-white border border-gray-100">
-                                     <img src="{{ Str::startsWith($section->image, 'http') ? $section->image : asset($section->image) }}" 
-                                          alt="{{ $section->title }}" 
+                                     <img src="{{ Str::startsWith($section->image, 'http') ? $section->image : asset($section->image) }}"
+                                          alt="{{ $section->title }}"
                                           class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700 ease-in-out">
                                 </div>
                             </div>
@@ -110,18 +112,15 @@
 
                         <div class="flex-1 {{ !$section->image ? 'w-full text-center max-w-4xl mx-auto' : '' }}">
                             <div class="flex items-center gap-3 mb-6 {{ !$section->image ? 'justify-center' : '' }}">
-                                <span class="px-3 py-1 rounded-full bg-red-50 text-[#B91C1C] text-xs font-bold uppercase tracking-wide border border-red-100">
-                                    Update
-                                </span>
                                 <span class="text-gray-400 text-sm font-medium">
                                     {{ $section->updated_at->format('M d, Y') }}
                                 </span>
                             </div>
-                            
+
                             <h2 class="text-3xl font-bold text-gray-900 mb-6 leading-tight">
                                 {{ $section->title }}
                             </h2>
-                            
+
                             <div class="prose prose-lg text-gray-500 prose-red leading-relaxed">
                                 {!! nl2br(e($section->content)) !!}
                             </div>
