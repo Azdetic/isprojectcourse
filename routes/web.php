@@ -9,6 +9,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\MyProductController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AboutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -70,3 +71,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/products', [AdminController::class, 'products'])->name('products.index');
     Route::delete('/products/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
 });
+
+
+// Public "About" Page
+Route::get('/about', [AboutController::class, 'index'])->name('about.index');
+
+// Management Routes (Ideally protect these with middleware later)
+Route::get('/about/manage', [AboutController::class, 'manage'])->name('about.manage');
+Route::post('/about/store', [AboutController::class, 'store'])->name('about.store');
+Route::put('/about/update/{id}', [AboutController::class, 'update'])->name('about.update');
+Route::delete('/about/delete/{id}', [AboutController::class, 'destroy'])->name('about.destroy');
