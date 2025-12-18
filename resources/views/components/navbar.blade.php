@@ -6,7 +6,6 @@
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-3">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain">
-                        
                         <span class="text-2xl font-extrabold text-[#B91C1C] tracking-tight uppercase">TMARKET</span>
                     </a>
                 </div>
@@ -14,7 +13,7 @@
                 <div class="hidden md:flex space-x-6">
                     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 hover:text-[#B91C1C] font-medium transition' }}">Home</a>
                     <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 hover:text-[#B91C1C] font-medium transition' }}">Products</a>
-                    <a href="#" class="text-gray-500 hover:text-[#B91C1C] font-medium transition">About</a>
+                    <a href="{{ route('about.index') }}" class="{{ request()->routeIs('about.index') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 hover:text-[#B91C1C] font-medium transition' }}">About</a>
                 </div>
             </div>
 
@@ -83,7 +82,7 @@
         <div class="flex space-x-6 py-3 overflow-x-auto no-scrollbar">
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 font-medium whitespace-nowrap' }}">Home</a>
             <a href="{{ route('products') }}" class="{{ request()->routeIs('products') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 font-medium whitespace-nowrap' }}">Products</a>
-            <a href="#" class="text-gray-500 font-medium whitespace-nowrap">About</a>
+            <a href="{{ route('about.index') }}" class="{{ request()->routeIs('about.index') ? 'text-[#B91C1C] font-bold' : 'text-gray-500 font-medium whitespace-nowrap' }}">About</a>
         </div>
         <div class="relative">
             <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C]">
