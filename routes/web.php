@@ -11,11 +11,10 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutController;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [ProductController::class, 'home'])->name('home');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products');
+Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product-detail');
 
 // Auth Routes
@@ -76,8 +75,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 // Public "About" Page
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
-// Management Routes (Ideally protect these with middleware later)
-Route::get('/about/manage', [AboutController::class, 'manage'])->name('about.manage');
-Route::post('/about/store', [AboutController::class, 'store'])->name('about.store');
-Route::put('/about/update/{id}', [AboutController::class, 'update'])->name('about.update');
-Route::delete('/about/delete/{id}', [AboutController::class, 'destroy'])->name('about.destroy');
+// Management Routes (Protected for admins only)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/about/manage', [AboutController::class, 'manage'])->name('about.manage');
+    Route::post('/about/store', [AboutController::class, 'store'])->name('about.store');
+    Route::put('/about/update/{id}', [AboutController::class, 'update'])->name('about.update');
+    Route::delete('/about/delete/{id}', [AboutController::class, 'destroy'])->name('about.destroy');
+});

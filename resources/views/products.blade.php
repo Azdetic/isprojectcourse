@@ -6,6 +6,7 @@
     <title>Browse Products - TMarket</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -23,19 +24,101 @@
 
         <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Browse Products</h1>
-                <p class="text-gray-500 font-medium">Discover unique items from your fellow Telkom University students.</p>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+                    @if($search ?? false)
+                        @if($category ?? false)
+                            Search Results for "{{ $search }}" in {{ $category }}
+                        @else
+                            Search Results for "{{ $search }}"
+                        @endif
+                    @elseif($category ?? false)
+                        {{ $category }} Products
+                    @else
+                        Browse Products
+                    @endif
+                </h1>
+                <p class="text-gray-500 font-medium">
+                    @if($search ?? false)
+                        @if($category ?? false)
+                            Found {{ $products->total() }} product{{ $products->total() !== 1 ? 's' : '' }} matching "{{ $search }}" in {{ $category }} category.
+                        @else
+                            Found {{ $products->total() }} product{{ $products->total() !== 1 ? 's' : '' }} matching your search.
+                        @endif
+                    @elseif($category ?? false)
+                        Found {{ $products->total() }} product{{ $products->total() !== 1 ? 's' : '' }} in {{ $category }} category.
+                    @else
+                        Discover unique items from your fellow Telkom University students.
+                    @endif
+                </p>
             </div>
+            @if(($search ?? false) || ($category ?? false))
+                <a href="{{ route('products') }}" class="text-[#B91C1C] hover:text-red-700 font-medium flex items-center gap-2">
+                    <i class="fas fa-times"></i> Clear Filters
+                </a>
+            @endif
         </div>
 
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                <div class="flex items-center overflow-x-auto no-scrollbar pb-1 md:pb-0 gap-2">
-                    <span class="text-gray-400 font-bold text-xs uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
-                    <a href="{{ route('products') }}" class="bg-[#B91C1C] text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md shadow-red-900/20 transition hover:bg-red-800">
-                        All Items
-                    </a>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 font-bold text-xs uppercase tracking-wider whitespace-nowrap">Filter:</span>
+
+                    <!-- Filter Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition min-w-[140px] justify-between">
+                            <span>
+                                @if($category ?? false)
+                                    {{ $category }}
+                                @else
+                                    All Items
+                                @endif
+                            </span>
+                            <i class="fas fa-chevron-down text-xs transition" :class="{ 'rotate-180': open }"></i>
+                        </button>
+
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 min-w-[140px] py-2">
+                            <a href="{{ route('products') }}" class="block px-4 py-2 text-sm hover:bg-gray-50 {{ (!$search && !$category) ? 'text-[#B91C1C] font-bold' : 'text-gray-700' }}">
+                                All Items
+                            </a>
+                            @php
+                                $categories = ['Books', 'Electronics', 'Fashion', 'Stationery', 'Food', 'Other'];
+                            @endphp
+                            @foreach($categories as $cat)
+                                <a href="{{ route('products', ['category' => $cat] + ($search ? ['search' => $search] : [])) }}"
+                                   class="block px-4 py-2 text-sm hover:bg-gray-50 {{ $category == $cat ? 'text-[#B91C1C] font-bold' : 'text-gray-700' }}">
+                                    {{ $cat }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Active Filters Display -->
+                    @if($search ?? false)
+                        <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold">
+                            <i class="fas fa-search"></i>
+                            "{{ $search }}"
+                            <a href="{{ route('products', $category ? ['category' => $category] : []) }}" class="ml-1 hover:text-blue-900">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    @endif
+
+                    @if($category ?? false)
+                        <div class="flex items-center gap-2 bg-[#B91C1C] text-white px-3 py-1 rounded-lg text-xs font-bold">
+                            <i class="fas fa-tag"></i>
+                            {{ $category }}
+                            <a href="{{ route('products', $search ? ['search' => $search] : []) }}" class="ml-1 hover:text-red-200">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    @endif
                 </div>
+
+                @if(($search ?? false) || ($category ?? false))
+                    <a href="{{ route('products') }}" class="text-[#B91C1C] hover:text-red-700 font-medium flex items-center gap-2 text-sm">
+                        <i class="fas fa-times"></i> Clear All Filters
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -94,8 +177,25 @@
                     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
                         <i class="fas fa-search text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900">No products found</h3>
-                    <p class="text-gray-500 text-sm mt-1 max-w-xs mx-auto">Try listing a product first!</p>
+                    <h3 class="text-lg font-bold text-gray-900">
+                        @if($search ?? false)
+                            No products found
+                        @else
+                            No products available
+                        @endif
+                    </h3>
+                    <p class="text-gray-500 text-sm mt-1 max-w-xs mx-auto">
+                        @if($search ?? false)
+                            Try adjusting your search terms or browse all products.
+                        @else
+                            Try listing a product first!
+                        @endif
+                    </p>
+                    @if($search ?? false)
+                        <a href="{{ route('products') }}" class="mt-4 text-[#B91C1C] hover:text-red-700 font-medium">
+                            Browse all products →
+                        </a>
+                    @endif
                 </div>
             </div>
             @endforelse
@@ -103,7 +203,7 @@
 
         @if(method_exists($products, 'links'))
         <div class="mt-8">
-            {{ $products->links() }}
+            {{ $products->appends(request()->query())->links() }}
         </div>
         @endif
 

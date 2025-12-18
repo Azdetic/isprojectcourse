@@ -52,9 +52,16 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-                                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}"
-                                             alt="{{ $product->name }}"
-                                             class="w-full h-full object-cover">
+                                        @if($product->image)
+                                            <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}"
+                                                 alt="{{ $product->name }}"
+                                                 class="w-full h-full object-cover"
+                                                 onerror="this.src='https://via.placeholder.com/48x48?text=No+Image'">
+                                        @else
+                                            <img src="https://via.placeholder.com/48x48?text=No+Image"
+                                                 alt="{{ $product->name }}"
+                                                 class="w-full h-full object-cover">
+                                        @endif
                                     </div>
                                     <div>
                                         <div class="font-bold text-gray-900 line-clamp-1">{{ $product->name }}</div>

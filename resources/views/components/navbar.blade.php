@@ -19,13 +19,19 @@
             </div>
 
             <div class="flex-1 max-w-lg mx-8 hidden md:block">
-                <div class="relative group">
-                    <input type="text" placeholder="Search for books, electronics..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C] text-sm transition-all group-hover:bg-white group-hover:shadow-sm">
+                <form action="{{ route('products') }}" method="GET" class="relative group">
+                    <input type="text" name="search" id="search-input" placeholder="Search for books, electronics..."
+                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:border-[#B91C1C] focus:ring-1 focus:ring-[#B91C1C] text-sm transition-all group-hover:bg-white group-hover:shadow-sm"
+                        value="{{ request('search') }}">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400 group-hover:text-[#B91C1C] transition"></i>
                     </div>
-                </div>
+
+                    <!-- Search Results Dropdown -->
+                    <div id="search-results" class="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 hidden max-h-96 overflow-y-auto">
+                        <div id="search-results-content"></div>
+                    </div>
+                </form>
             </div>
 
             <div class="flex items-center space-x-5">
@@ -100,3 +106,104 @@
         </div>
     </div>
 </nav>
+
+<script>
+    // Debounce function to limit API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        const searchResultsContent = document.getElementById('search-results-content');
+
+        if (!searchInput || !searchResults) return;
+
+        // Debounced search function
+        const debouncedSearch = debounce(async function(query) {
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/products/search?q=${encodeURIComponent(query)}`);
+                const products = await response.json();
+
+                if (products.length > 0) {
+                    const resultsHtml = products.map(product => `
+                        <a href="/product/${product.id}" class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src="${product.image.startsWith('http') ? product.image : '/storage/' + product.image}"
+                                         alt="${product.name}"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.src='https://via.placeholder.com/40x40?text=No+Image'">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-medium text-gray-900 truncate">${product.name}</div>
+                                    <div class="text-sm text-gray-500">${product.category}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-[#B91C1C]">Rp ${new Intl.NumberFormat('id-ID').format(product.price)}</div>
+                                </div>
+                            </div>
+                        </a>
+                    `).join('');
+
+                    searchResultsContent.innerHTML = resultsHtml;
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResultsContent.innerHTML = `
+                        <div class="px-4 py-3 text-gray-500 text-center">
+                            No products found for "${query}"
+                        </div>
+                    `;
+                    searchResults.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.classList.add('hidden');
+            }
+        }, 300); // 300ms debounce
+
+        // Input event listener
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+            debouncedSearch(query);
+        });
+
+        // Focus event to show results if there's a query
+        searchInput.addEventListener('focus', function() {
+            const query = searchInput.value.trim();
+            if (query.length >= 2) {
+                debouncedSearch(query);
+            }
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Hide results on escape key
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchResults.classList.add('hidden');
+                searchInput.blur();
+            }
+        });
+    });
+</script>

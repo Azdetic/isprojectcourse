@@ -4,13 +4,56 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Review;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function home()
     {
-        $products = Product::all();
-        return view('products', compact('products'));
+        // Get trending products (latest 4 products for homepage)
+        $trendingProducts = Product::latest()->take(4)->get();
+        return view('welcome', compact('trendingProducts'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::where('name', 'LIKE', "%{$query}%")
+            ->orWhere('category', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'name', 'category', 'price', 'image']);
+
+        return response()->json($products);
+    }
+
+    public function index(Request $request)
+    {
+        $search = $request->get('search');
+        $category = $request->get('category');
+
+        $query = Product::query();
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('category', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $products = $query->paginate(12);
+
+        return view('products', compact('products', 'search', 'category'));
     }
 
     public function show($id)
