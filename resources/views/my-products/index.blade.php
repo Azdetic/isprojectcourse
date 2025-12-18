@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Shop - TMarket</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
@@ -52,7 +52,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-                                        <img src="{{ asset($product->image) }}" class="w-full h-full object-cover"> 
+                                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}"
                                              alt="{{ $product->name }}"
                                              class="w-full h-full object-cover">
                                     </div>
@@ -80,7 +80,7 @@
                                     <a href="{{ route('my-products.edit', $product->id) }}" class="p-2 text-gray-400 hover:text-[#B91C1C] hover:bg-red-50 rounded-lg transition" title="Edit">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
-                                    
+
                                     <form action="{{ route('my-products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this item?');">
                                         @csrf
                                         @method('DELETE')
@@ -110,7 +110,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             @if(method_exists($products, 'links'))
                 <div class="px-6 py-4 border-t border-gray-100">
                     {{ $products->links() }}

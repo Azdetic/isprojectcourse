@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -19,6 +20,11 @@ class CartController extends Controller
 
         if(!$product) {
             abort(404);
+        }
+
+        // Prevent seller from buying their own product
+        if (Auth::check() && $product->user_id == Auth::id()) {
+            return redirect()->back()->with('error', 'You cannot buy your own product.');
         }
 
         $cart = session()->get('cart', []);

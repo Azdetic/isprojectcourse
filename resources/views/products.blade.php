@@ -45,8 +45,8 @@
 
                 <div class="relative h-60 bg-gray-100 overflow-hidden">
                     <a href="{{ route('product-detail', $product->id) }}" class="block w-full h-full">
-                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}" 
-                             alt="{{ $product->name }}" 
+                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}"
+                             alt="{{ $product->name }}"
                              class="w-full h-full object-cover group-hover:scale-110 transition duration-700"
                              onerror="this.src='https://placehold.co/400x400?text=No+Image'">
                     </a>
@@ -76,9 +76,15 @@
                         <a href="{{ route('product-detail', $product->id) }}" class="col-span-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-sm hover:border-[#B91C1C] hover:text-[#B91C1C] hover:bg-red-50 transition flex items-center justify-center">
                             View Details
                         </a>
-                        <a href="{{ route('cart.add', $product->id) }}" class="col-span-1 py-2.5 rounded-xl bg-[#B91C1C] text-white font-medium text-sm hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center justify-center">
-                            <i class="fas fa-cart-plus"></i>
-                        </a>
+                        @if(Auth::check() && Auth::id() == $product->user_id)
+                            <button disabled class="col-span-1 py-2.5 rounded-xl bg-gray-200 text-gray-400 font-medium text-sm cursor-not-allowed flex items-center justify-center" title="You own this item">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        @else
+                            <a href="{{ route('cart.add', $product->id) }}" class="col-span-1 py-2.5 rounded-xl bg-[#B91C1C] text-white font-medium text-sm hover:bg-red-800 transition shadow-lg shadow-red-900/20 flex items-center justify-center">
+                                <i class="fas fa-cart-plus"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -94,7 +100,7 @@
             </div>
             @endforelse
         </div>
-        
+
         @if(method_exists($products, 'links'))
         <div class="mt-8">
             {{ $products->links() }}
