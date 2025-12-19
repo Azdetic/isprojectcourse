@@ -24,27 +24,43 @@
 
         @if(session('success'))
             <div class="mb-6 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-xl text-sm font-bold">
-                {{ session('success') }}
+                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
             </div>
         @endif
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-10">
             <h2 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Add New Section</h2>
+            
             <form action="{{ route('about.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
-                        <input type="text" name="name" class="hidden"> <input type="text" name="title" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2" placeholder="e.g. Our Vision" required>
+                        <input type="text" name="title" 
+                               class="w-full bg-gray-50 border rounded-lg px-4 py-2 @error('title') border-red-500 bg-red-50 @else border-gray-200 @enderror" 
+                               placeholder="e.g. Our Vision" 
+                               value="{{ old('title') }}"> @error('title')
+                            <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Image (Optional)</label>
                         <input type="file" name="image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                        
+                        @error('image')
+                            <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Content</label>
-                    <textarea name="content" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2" placeholder="Write the details here..." required></textarea>
+                    <textarea name="content" rows="3" 
+                              class="w-full bg-gray-50 border rounded-lg px-4 py-2 @error('content') border-red-500 bg-red-50 @else border-gray-200 @enderror" 
+                              placeholder="Write the details here...">{{ old('content') }}</textarea>
+                    
+                    @error('content')
+                        <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="text-right">
                     <button type="submit" class="bg-[#B91C1C] text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-red-800 transition">Add Section</button>
@@ -71,9 +87,8 @@
                             
                             <div class="flex justify-between gap-4 mb-2">
                                 <input type="text" name="title" value="{{ $section->title }}" class="font-bold text-gray-900 bg-transparent border-b border-gray-300 focus:border-[#B91C1C] focus:outline-none w-full">
-                                <input type="number" name="order" value="{{ $section->order }}" class="w-16 text-xs text-center border rounded bg-gray-50" title="Sort Order">
                             </div>
-
+                            
                             <textarea name="content" rows="2" class="w-full text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded p-2 mb-3">{{ $section->content }}</textarea>
 
                             <div class="flex justify-between items-center">
