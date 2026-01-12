@@ -52,20 +52,20 @@
                     </h1>
 
                     <p class="text-lg md:text-xl text-red-50 mb-8 max-w-xl leading-relaxed font-medium">
-                        The safest way to trade textbooks, electronics, and dorm essentials directly with other students.
+                        Your exclusive marketplace for buying and selling textbooks, electronics, and essentials with fellow Telkom University students.
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4">
                         <a href="{{ route('products') }}" 
                            class="px-8 py-4 bg-white text-[#B91C1C] rounded-xl font-bold hover:bg-gray-50 transition shadow-xl shadow-red-900/20 transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                           aria-label="Start shopping for campus products">
-                            <span>Start Shopping</span>
+                           aria-label="Explore deals on campus products">
+                            <span>Explore Deals</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
-                        <a href="#" 
+                        <a href="{{ route('my-products.create') }}" 
                            class="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl font-bold hover:bg-white/10 backdrop-blur-sm transition flex items-center justify-center"
                            aria-label="Sell an item on the marketplace">
-                            Sell an Item
+                            Start Selling
                         </a>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
         </section>
 
         <section aria-labelledby="categories-heading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h2 id="categories-heading" class="text-2xl font-bold text-gray-900 mb-6">Browse Categories</h2>
+            <h2 id="categories-heading" class="text-2xl font-bold text-gray-900 mb-6">What Are You Looking For?</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 @php
                     $categoryItems = [
@@ -105,48 +105,9 @@
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse($trendingProducts as $product)
-                        <article class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition duration-300 overflow-hidden group">
-                            <div class="relative h-48 bg-gray-200">
-                                <a href="{{ route('product-detail', $product->id) }}" aria-label="View details for {{ $product->name }}">
-                                    <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset(ltrim($product->image, '/')) }}" 
-                                         alt="Product: {{ $product->name }}" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                         onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
-                                </a>
-                                <div class="absolute top-2 right-2">
-                                    <button class="bg-white p-2 rounded-full shadow-sm hover:text-red-500 transition" 
-                                            aria-label="Add {{ $product->name }} to wishlist">
-                                        <i class="far fa-heart" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <div class="text-xs text-gray-600 font-bold mb-1 uppercase">{{ $product->category }}</div>
-                                <a href="{{ route('product-detail', $product->id) }}">
-                                    <h3 class="font-bold text-gray-900 mb-1 truncate hover:text-t-red transition">{{ $product->name }}</h3>
-                                </a>
-                                
-                                <div class="flex items-center gap-1 mb-2">
-                                    <div class="flex text-yellow-500 text-xs" 
-                                         role="img" 
-                                         aria-label="Rating: {{ $product->rating }} out of 5 stars">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="{{ $i <= round($product->rating) ? 'fas' : 'far' }} fa-star" aria-hidden="true"></i>
-                                        @endfor
-                                    </div>
-                                    <span class="text-xs text-gray-600 font-medium">({{ $product->reviews_count }})</span>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-lg font-extrabold text-t-red">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                                    <a href="{{ route('cart.add', $product->id) }}" class="text-gray-400 hover:text-t-red transition" aria-label="Add {{ $product->name }} to cart">
-                                        <i class="fas fa-plus-circle text-2xl" aria-hidden="true"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                        <x-product-card :product="$product" />
                     @empty
                         <div class="col-span-full text-center py-10">
                             <i class="fas fa-box-open text-gray-300 text-6xl mb-4" aria-hidden="true"></i>

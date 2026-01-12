@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\MyProductController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PlaceholderController;
+use App\Http\Controllers\LegalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutController;
 
@@ -47,9 +49,15 @@ Route::middleware('auth')->group(function () {
     // My Products Routes
     Route::resource('my-products', MyProductController::class);
 
-    // Sales Routes (Incoming Orders for Sellers)
     Route::get('/sales', [App\Http\Controllers\SalesController::class, 'index'])->name('sales.index');
-    Route::post('/sales/{id}/ship', [App\Http\Controllers\SalesController::class, 'shipItem'])->name('sales.ship');
+    
+    // Chat Routes
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{userId}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{conversationId}', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
+
+    // Placeholder Routes
+    Route::get('/seller/{id}/profile', [PlaceholderController::class, 'comingSoon'])->name('seller.profile');
 });
 
 // Admin Routes
@@ -71,6 +79,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/products/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
 });
 
+
+// Legal Routes
+Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.privacy');
+Route::get('/terms-of-service', [LegalController::class, 'terms'])->name('legal.terms');
 
 // Public "About" Page
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');

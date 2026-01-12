@@ -46,13 +46,13 @@
     
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    @include('layouts.navbar')
+    @include('components.navbar')
 
     <main id="main-content" class="flex-grow focus:outline-none" tabindex="-1">
         @yield('content')
     </main>
 
-    @include('layouts.footer')
+    @include('components.footer')
 
 </body>
 </html>
