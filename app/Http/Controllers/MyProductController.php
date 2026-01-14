@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Support\Facades\Auth;
 
 class MyProductController extends Controller
@@ -20,9 +21,9 @@ class MyProductController extends Controller
         return view('my-products.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ProductService $productService)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
             'category' => 'required',
@@ -30,20 +31,7 @@ class MyProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $input = $request->all();
-
-        if ($image = $request->file('image')) {
-            $destinationPath = 'images/';
-            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $profileImage);
-            $input['image'] = "/images/$profileImage";
-        }
-
-        // Set seller info
-        $input['user_id'] = Auth::id();
-        $input['seller_name'] = Auth::user()->name;
-
-        Product::create($input);
+        $productService->createProduct($validatedData);
 
         return redirect()->route('my-products.index')->with('success', 'Product created successfully.');
     }
@@ -60,9 +48,9 @@ class MyProductController extends Controller
         return view('my-products.edit', compact('product'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, ProductService $productService, $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
             'category' => 'required',
@@ -77,18 +65,7 @@ class MyProductController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $input = $request->all();
-
-        if ($image = $request->file('image')) {
-            $destinationPath = 'images/';
-            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $profileImage);
-            $input['image'] = "/images/$profileImage";
-        } else {
-            unset($input['image']);
-        }
-
-        $product->update($input);
+        $productService->updateProduct($validatedData, $product);
 
         return redirect()->route('my-products.index')->with('success', 'Product updated successfully.');
     }
@@ -100,6 +77,11 @@ class MyProductController extends Controller
         // Check ownership
         if ($product->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
+        }
+
+        // Optional: Delete the image from storage when the product is deleted
+        if ($product->image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();

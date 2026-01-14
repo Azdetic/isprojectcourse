@@ -47,8 +47,8 @@
         <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
             <p>&copy; {{ date('Y') }} TMarket. All rights reserved.</p>
             <div class="flex gap-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                <a href="#" class="hover:text-white transition">Terms of Service</a>
+                <a href="{{ route('legal.privacy') }}" class="hover:text-white transition">Privacy Policy</a>
+                <a href="{{ route('legal.terms') }}" class="hover:text-white transition">Terms of Service</a>
             </div>
         </div>
     </div>

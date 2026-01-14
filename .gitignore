@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/storage/*.index
+test_about_page.py
+dummy.pdf
+evidence_*.png
+public/images/about/

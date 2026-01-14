@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -16,7 +18,50 @@ class AdminController extends Controller
         $pendingOrders = Order::where('status', 'pending_approval')->count();
         $totalProducts = Product::count();
 
-        return view('admin.dashboard', compact('totalUsers', 'totalOrders', 'pendingOrders', 'totalProducts'));
+        // New Stats
+        $totalRevenue = Order::where('status', 'completed')->sum('total_price');
+        $thirtyDaysAgo = Carbon::now()->subDays(30);
+        $monthlyRevenue = Order::where('status', 'completed')
+                               ->where('updated_at', '>=', $thirtyDaysAgo)
+                               ->sum('total_price');
+        $newUsers = User::where('created_at', '>=', $thirtyDaysAgo)->count();
+
+        // Sales data for chart
+        $salesData = Order::where('status', 'completed')
+            ->where('updated_at', '>=', $thirtyDaysAgo)
+            ->select(
+                DB::raw('DATE(updated_at) as date'),
+                DB::raw('SUM(total_price) as total')
+            )
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $salesChartLabels = [];
+        $salesChartData = [];
+        
+        // Create a date range for the last 30 days
+        $dateRange = Carbon::today()->subDays(29)->toPeriod(Carbon::today());
+
+        $salesByDate = $salesData->keyBy('date');
+
+        foreach ($dateRange as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $salesChartLabels[] = $date->format('M d');
+            $salesChartData[] = $salesByDate->get($formattedDate, (object)['total' => 0])->total;
+        }
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalOrders',
+            'pendingOrders',
+            'totalProducts',
+            'totalRevenue',
+            'monthlyRevenue',
+            'newUsers',
+            'salesChartLabels',
+            'salesChartData'
+        ));
     }
 
     public function users()
@@ -56,12 +101,6 @@ class AdminController extends Controller
     {
         $order = Order::findOrFail($id);
         if ($order->status === 'pending_approval') {
-            // Option 1: Cancel it
-            // Option 2: Move back to to_pay? Let's cancel it or delete it.
-            // User asked for "decline". Let's set status to 'cancelled' or just delete.
-            // Let's assume 'cancelled' status exists or we just revert to 'to_pay' with a message?
-            // For simplicity, let's revert to 'to_pay' so user can try again, or 'cancelled'.
-            // Let's use 'cancelled'.
             $order->update(['status' => 'cancelled']);
             return back()->with('success', 'Order rejected/cancelled.');
         }

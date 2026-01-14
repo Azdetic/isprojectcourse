@@ -25,28 +25,39 @@ class OrderController extends Controller
     public function checkout(Request $request)
     {
         $cart = session()->get('cart');
-        $selectedItems = $request->input('selected_items', []);
+        $selectedItemIds = $request->input('selected_items', []);
 
-        if (!$cart || count($cart) == 0) {
-            return redirect()->route('cart.index')->with('error', 'Cart is empty');
-        }
-
-        if (empty($selectedItems)) {
+        if (!$cart || empty($selectedItemIds)) {
             return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
         }
 
-        $total = 0;
-        $checkoutItems = [];
+        // Fetch all products from the database at once for efficiency
+        $productsInCart = \App\Models\Product::findMany($selectedItemIds);
+        
+        if ($productsInCart->count() !== count($selectedItemIds)) {
+            return redirect()->route('cart.index')->with('error', 'Some selected items were not found.');
+        }
 
-        foreach ($selectedItems as $id) {
-            if (isset($cart[$id])) {
-                $checkoutItems[$id] = $cart[$id];
-                $total += $cart[$id]['price'] * $cart[$id]['quantity'];
+        $total = 0;
+        $orderItemsData = [];
+
+        foreach ($productsInCart as $product) {
+            $quantity = $cart[$product->id]['quantity'] ?? 0;
+            if ($quantity > 0) {
+                // Use the price from the database for calculation
+                $total += $product->price * $quantity;
+                $orderItemsData[] = [
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'product_image' => $product->image,
+                    'quantity' => $quantity,
+                    'price' => $product->price // Authoritative price from DB
+                ];
             }
         }
 
-        if (empty($checkoutItems)) {
-             return redirect()->route('cart.index')->with('error', 'Selected items not found in cart.');
+        if (empty($orderItemsData)) {
+             return redirect()->route('cart.index')->with('error', 'No valid items to checkout.');
         }
 
         $order = Order::create([
@@ -55,18 +66,12 @@ class OrderController extends Controller
             'status' => 'to_pay'
         ]);
 
-        foreach ($checkoutItems as $id => $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $id,
-                'product_name' => $item['name'],
-                'product_image' => $item['image'] ?? 'https://via.placeholder.com/400x400?text=No+Image',
-                'quantity' => $item['quantity'],
-                'price' => $item['price']
-            ]);
-
+        foreach ($orderItemsData as $itemData) {
+            $itemData['order_id'] = $order->id;
+            OrderItem::create($itemData);
+            
             // Remove only checked out items from cart
-            unset($cart[$id]);
+            unset($cart[$itemData['product_id']]);
         }
 
         session()->put('cart', $cart);

@@ -65,6 +65,7 @@
                                     <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->email }}</p>
                                 </div>
                                 <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Profile</a>
+                                <a href="{{ route('chat.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Messages</a>
                                 <a href="{{ route('my-products.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">My Products</a>
                                 <a href="{{ route('sales.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">Incoming Orders</a>
                                 <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-[#B91C1C]">View my orders</a>
